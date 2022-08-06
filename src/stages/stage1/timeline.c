@@ -20,23 +20,30 @@
 #include "common_tasks.h"
 #include "enemy_classes.h"
 
+/*Define tasks, i.e. a single enemy type. 
+For example, mof stage 1 fairy on lunatic would move downwards, fire a stream of aimed bullets,
+and then exit drift to the side
+Assign a name to each task and later spawn/invoke it by name via another task.
+You can set movement, bullet pattern/behavior/sound/type etc here
+*/
+
 TASK(burst_fairy, { BoxedEnemy e; cmplx target_pos; cmplx exit_dir; }) {
 	Enemy *e = TASK_BIND(ARGS.e);
 	e->move = move_towards(ARGS.target_pos, 0.03);
-
+	//delay in frames before shooting per difficulty
 	WAIT(difficulty_value(120, 80, 60, 60));
 
 	play_sfx("shot1");
 	int n = difficulty_value(0, 1, 3, 5);
 
 	for(int i = -n; i <= n; i++) {
-		cmplx aim = cdir(carg(global.plr.pos - e->pos) + 0.2 * i);
-
+		cmplx aim = cdir(carg(global.plr.pos - e->pos) + 0.2 * i); //This specifies the exact point to travel to. Since we are firing multiple bullets only the center one is aimed at the player, the others are spread out
+//creates a projectile
 		PROJECTILE(
-			.proto = pp_crystal,
-			.pos = e->pos,
-			.color = RGB(0.2, 0.3, 0.5),
-			.move = move_asymptotic_simple(aim * (2 + 0.5 * global.diff), 5),
+			.proto = pp_crystal, //projprototype
+			.pos = e->pos, //proj start location = enemy position
+			.color = RGB(0.2, 0.3, 0.5), //proj color
+			.move = move_asymptotic_simple(aim * (2 + 0.5 * global.diff), 15), //Exact point of aim multiplied by offset. global.diff stores difficulty, in this case makes bullets faster. Boost factor determines the time bullets travel at a superfast speed on spawn
 		);
 	}
 
@@ -44,7 +51,7 @@ TASK(burst_fairy, { BoxedEnemy e; cmplx target_pos; cmplx exit_dir; }) {
 
 	e->move.attraction = 0;
 	e->move.acceleration = 0.04 * ARGS.exit_dir;
-	e->move.retention = 1;
+	e->move.retention = 1.1; //"Force" that keeps enemy in the same direction?
 }
 
 TASK(circletoss_shoot_circle, { BoxedEnemy e; int duration; int interval; }) {
@@ -398,9 +405,15 @@ TASK(explosion_fairy, { cmplx pos; cmplx target_pos; cmplx exit_accel; }) {
 	e->move.acceleration = ARGS.exit_accel;
 }
 
+/*
+Here, bundle task invokes as stage sections. burst_fairies_1 is basically the "stage opener"
+This invokes two burst fairies, at offset 70 px left/right of center, that behave like burst_fairy specifies
+*/
+
 // opening. projectile bursts
 TASK(burst_fairies_1) {
-	for(int i = 3; i--;) {
+	//Number of waves of fairies
+	for(int i = 5; i--;) {
 		INVOKE_TASK(burst_fairy,
 			.e = espawn_fairy_blue_box(VIEWPORT_W/2 + 70, ITEMS(.points = 1)),
 			.target_pos = VIEWPORT_W/2 + 70 + (120 + 42 * i)*I,

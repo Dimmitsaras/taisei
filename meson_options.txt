@@ -89,7 +89,7 @@ option(
 option(
     'docs',
     type : 'boolean',
-    value : true,
+    value : false,
     description : 'Build and install documentation'
 )
 

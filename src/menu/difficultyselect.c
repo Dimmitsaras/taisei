@@ -42,7 +42,7 @@ MenuData* create_difficulty_menu(void) {
 
 	add_menu_entry(m, "For those just beginning\ntheir academic careers", set_difficulty, (void *)D_Easy);
 	add_menu_entry(m, "All those years of study\nhave finally paid off", set_difficulty, (void *)D_Normal);
-	add_menu_entry(m, "You must really\nlove books", set_difficulty, (void *)D_Hard);
+	add_menu_entry(m, "Test Cock\nAss", set_difficulty, (void *)D_Hard);
 	add_menu_entry(m, "You either die a student,\nor live long enough to\nbecome a professor", set_difficulty, (void *)D_Lunatic);
 
 	dynarray_foreach(&m->entries, int i, MenuEntry *e, {

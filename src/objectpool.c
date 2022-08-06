@@ -6,6 +6,20 @@
  * Copyright (c) 2012-2019, Andrei Alexeyev <akari@taisei-project.org>.
  */
 
+/*
+we use a simple object pooling system and intrusive linked lists. 
+each basic type of game object (e.g. bullet, item, enemy) gets a set amount of its 
+respective structs pre-allocated in an array. initially, each element of the array 
+is also linked (intrusively) together - this list represents the "free" objects available for use. 
+when a spawn is requested, a free object is popped from the list and returned to the caller, 
+which then puts it into its own list of active objects instead. when the object is
+no longer needed (e.g. a bullet is destroyed, an item is collected, etc.), 
+it must be released back into the pool - which simply puts it back into the "free" list
+the point of this is just to avoid excessive memory allocation. 
+there is actually an alternative "fake" implementation that simply calls malloc/free 
+for each acquire/release request, we use that for debugging with ASan sometimes
+*/
+
 #include "taisei.h"
 
 #include "objectpool.h"

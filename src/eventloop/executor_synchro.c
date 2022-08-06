@@ -6,6 +6,15 @@
  * Copyright (c) 2012-2019, Andrei Alexeyev <akari@taisei-project.org>.
  */
 
+/*
+as for the timing, we use a fixed time step of 1/60th of a second, and the time is measured in frames 
+- thus we do not have a "delta time" like most games; the delta is always 1 which simplifies things quite a bit
+the main loop is responsible for synchronization, the exact algorithm is a bit messy. you can find the implementation here
+you can ignore the uncapped_rendering clause entirely, it's an alternative code path that's not used by default. 
+it gives you unlimited rendering FPS, but it's not synchronized with either the refresh rate nor game logic, 
+so it doesn't look as smooth as the default path. it's mostly useful for benchmarking
+*/
+
 #include "taisei.h"
 
 #include "eventloop_private.h"

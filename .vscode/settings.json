@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "objectpool.h": "c",
+        "eventloop_private.h": "c",
+        "random": "c",
+        "chrono": "c"
+    }
+}
